@@ -1,0 +1,33 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v4
+      - 
+        name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Build and test
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          target: test
+          load: true
+        - 
+          name: Build and push
+          push: docker/build-push-aciton@v5
+          target: final
+          tags: ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:latest
+          
